@@ -92,7 +92,7 @@ if __name__=="__main__":
             epoch_loss += loss.item()      
             optimizer.step()                                    # update network parameters
         wandb.log({"train/loss": epoch_loss/len(train_dataloader)})
-        cfg.writer.add_scalar('Train_Loss', epoch_loss/len(train_dataloader), epoch)
+#        cfg.writer.add_scalar('Train_Loss', epoch_loss/len(train_dataloader), epoch)
 
         model.eval()
         example_images ,overlap_images= [],[]
@@ -116,9 +116,9 @@ if __name__=="__main__":
             elif epoch%10 ==0:
                 torch.save(model.state_dict(), os.path.join(cfg.checkpoints,str(epoch)+".pth"))     # save checkpoints
             print('Epoch ', epoch, ' MAE: ', epoch_mae, ' Min MAE: ', min_mae, ' Min Epoch: ', min_mae_epoch)   # print information
-            cfg.writer.add_scalar('Val_MAE', epoch_mae, epoch)
-            cfg.writer.add_image(str(epoch)+'/Image', denormalize(image[0].cpu()))
-            cfg.writer.add_image(str(epoch)+'/Estimate density count:'+ str('%.2f'%(et_densitymap[0].cpu().sum())), et_densitymap[0]/torch.max(et_densitymap[0]))
-            cfg.writer.add_image(str(epoch)+'/Ground Truth count:'+ str('%.2f'%(gt_densitymap[0].cpu().sum())), gt_densitymap[0]/torch.max(gt_densitymap[0]))
+  #          cfg.writer.add_scalar('Val_MAE', epoch_mae, epoch)
+   #         cfg.writer.add_image(str(epoch)+'/Image', denormalize(image[0].cpu()))
+    #        cfg.writer.add_image(str(epoch)+'/Estimate density count:'+ str('%.2f'%(et_densitymap[0].cpu().sum())), et_densitymap[0]/torch.max(et_densitymap[0]))
+     #       cfg.writer.add_image(str(epoch)+'/Ground Truth count:'+ str('%.2f'%(gt_densitymap[0].cpu().sum())), gt_densitymap[0]/torch.max(gt_densitymap[0]))
             wandb.log({'overlap_images': overlap_images, 'predicted_dmap': example_images,'Val_MAE': epoch_mae,'Estimate density count': et_densitymap[0].cpu().sum()})
 # %%
