@@ -88,7 +88,7 @@ def create_test_dataloader(root):
     main_trans = Compose(main_trans_list)
     img_trans = Compose([ToTensor()])#, Normalize(mean=[0.5,0.5,0.5],std=[0.225,0.225,0.225])])
     dmap_trans = ToTensor()
-    dataset = CrowdDataset(root=root, phase='test', main_transform=main_trans, 
+    dataset = CrowdDataset(root=root, phase='validation', main_transform=main_trans, 
                     img_transform=img_trans,dmap_transform=dmap_trans)
     dataloader = torch.utils.data.DataLoader(dataset,batch_size=1,shuffle=False)
     return dataloader

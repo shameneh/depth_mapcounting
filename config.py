@@ -8,9 +8,9 @@ class Config():
     Config class
     '''
     def __init__(self):
-        self.dataset_root = '/home/ubuntu/ameneh/datasets'
+        self.dataset_root = '/home/ubuntu/ameneh/datasets/whole_videos_data'
         self.device       = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-        self.lr           = 1e-4                # learning rate
+        self.lr           = 1e-5                # learning rate
         self.batch_size   = 2                   # batch size
         self.epochs       = 2000                # epochs
         self.checkpoints  = './checkpoints'     # checkpoints dir
