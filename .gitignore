@@ -1,3 +1,5 @@
 *.PNG
 *.png
 *.pth
+wandb/
+runs/

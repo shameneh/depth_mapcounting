@@ -72,11 +72,12 @@ def cal_mae(img_root,gt_dmap_root,model_param_path,out_path):
         for i,data in enumerate(tqdm(dataloader)):
             img = data['image'].to(device)
             gt_dmap = data['densitymap'].to(device)
+            image_name = data['image_name']
             #img=img.to(device)
             #gt_dmap=gt_dmap.to(device)
             # forward propagation
             et_dmap=model(img)
-            data_csv = [str(i), '15',str(gt_dmap.data.sum().item()),str(et_dmap.data.sum().item())]
+            data_csv = [image_name, '15',str(gt_dmap.data.sum().item()),str(et_dmap.data.sum().item())]
             with open(dir_csv, 'a', encoding='UTF8') as f:
                 writer = csv.writer(f)
                 writer.writerow(data_csv)
@@ -104,22 +105,23 @@ def estimate_density_map(img_root,gt_dmap_root,model_param_path,index,output):
         if i<index:
             img = data['image'].to(device)
             gt_dmap = data['densitymap'].to(device)
+            image_name = data['image_name']
 #            img=img.to(device)
 #            gt_dmap=gt_dmap.to(device)
             # forward propagation
             with torch.no_grad():
                 et_dmap=model(img).detach()
             et_dmap=et_dmap.squeeze(0).squeeze(0).cpu().numpy()
-            print(et_dmap.shape)
-            img=denormalize(img.cpu()).squeeze(0).squeeze(0).permute(1,2,0).cpu().numpy()
+            
+            img=img.cpu().squeeze(0).squeeze(0).permute(1,2,0).cpu().numpy()
             gt_dmap=gt_dmap.squeeze(0).squeeze(0).cpu().numpy()
             _visualize_(img,et_dmap,output,i)
             plt.imshow(et_dmap,cmap=CM.jet)
-            plt.savefig(f'{output}/pred_{i}.png')
+            plt.savefig(f'{output}/pred_{image_name}.png')
             plt.imshow(gt_dmap,cmap=CM.jet)
-            plt.savefig(f'{output}/gt_{i}.png')
+            plt.savefig(f'{output}/gt_{image_name}.png')
             plt.imshow(img)
-            plt.savefig(f'{output}/img_{i}.png')
+            plt.savefig(f'{output}/img_{image_name}.png')
 
 
 if __name__=="__main__":
