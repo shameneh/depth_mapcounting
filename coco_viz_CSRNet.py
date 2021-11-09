@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('source', type=str, nargs='+')
 parser.add_argument('--n', type=int, help='number of images to read')
-parser.add_argument('--out', type=str, help='output folder path')
+parser.add_argument('--output', type=str, help='output folder path')
 def xywh2xyxy(x, y, w, h) -> Tuple[int]:
     '''convert bbox format from (x, y, w, h) to (x0, y0, x1, y1)'''
     return int(x), int(y), int(x + w), int(y + h)
@@ -22,7 +22,7 @@ def center_xy(x,y,w,h) -> Tuple[int]:
 def main(args):
     for source in args.source:
         
-        annotation_path = Path(source, 'annotations/instances_default.json')
+        annotation_path = Path(source, 'annotations/sliced_instances_coco.json')
         #print(Path(source,'labels'))
         #if not os.path.isdir(Path(source,'labels')):
          #   os.mkdir(Path(source,'labels'))
@@ -35,7 +35,7 @@ def main(args):
             if args.n and not i < args.n:
                 break
            # print(img_info.file_name)
-            image_filepath = Path(source, 'images', img_info.file_name)
+            image_filepath = Path(source, 'sliced_images', img_info.file_name)
             image = Image.open(image_filepath)
             points = []
             for ann_info in img_info.anns:
@@ -46,10 +46,10 @@ def main(args):
                     x,y = center_xy(*ann_info.bbox)
                     points.append((x,y))
             frame_num = img_info.file_name
-            os.makedirs(Path(args.out,'images'),exist_ok= True)
-            os.makedirs(Path(args.out,'ground_truth_points'),exist_ok=True)
-            img_path = Path(args.out,'images',Path(source).name + f'_{frame_num}')
-            np.save(str(img_path).replace('.PNG','.npy').replace('images','ground_truth_points'), points)
+            os.makedirs(Path(args.output,'images'),exist_ok= True)
+            os.makedirs(Path(args.output,'ground_truth_points'),exist_ok=True)
+            img_path = Path(args.output,'images',Path(source).name + f'_{frame_num}')
+            np.save(str(img_path).replace('.jpg','.npy').replace('images','ground_truth_points'), points)
             shutil.copyfile(image_filepath,img_path)
 
 if __name__ == "__main__":

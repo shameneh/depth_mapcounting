@@ -1,3 +1,7 @@
 *.PNG
 *.png
 *.pth
+runs/
+checkpoint*/
+test_results*/
+wandb/

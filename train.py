@@ -74,19 +74,18 @@ if __name__=="__main__":
             #Since we want to use counting in loss we need per batch
             true_values_batch, predicted_values_batch = [],[]
             # loop over batch samples
-            for true, predicted in zip(gt_densitymap, gt_densitymap):
+        #    for true, predicted in zip(gt_densitymap, gt_densitymap):
                 # integrate a density map to get no. of objects
                 # note: density maps were normalized to 100 * no. of objects
                 #       to make network learn better
-                true_counts = torch.sum(true).item() / 100
-                predicted_counts = torch.sum(predicted).item() / 100
+         #       true_counts = torch.sum(true).item() / 100
+          #      predicted_counts = torch.sum(predicted).item() / 100
 
                 # update current epoch results
-                true_values_batch.append(true_counts)
-                predicted_values_batch.append(predicted_counts)
-            loss_count = criterion_count(torch.tensor(predicted_values_batch,device =cfg.device, requires_grad=True),torch.tensor(true_values_batch,device =cfg.device,requires_grad=True)) 
-            #loss_dmap = 1-criterion(et_densitymap.view(et_densitymap.size(0), -1),gt_densitymap.view(gt_densitymap.size(0), -1)).mean()
-            loss = loss_dmap+loss_count
+           #     true_values_batch.append(true_counts)
+            #    predicted_values_batch.append(predicted_counts)
+           # loss_count = criterion_count(torch.tensor(predicted_values_batch,device =cfg.device, requires_grad=True),torch.tensor(true_values_batch,device =cfg.device,requires_grad=True)) 
+            loss = loss_dmap#+loss_count
             optimizer.zero_grad()
             loss.backward()                                     # back propagation
             epoch_loss += loss.item()      
@@ -105,16 +104,17 @@ if __name__=="__main__":
                 mae = abs(et_densitymap.data.sum()-gt_densitymap.data.sum())
                 epoch_mae += mae.item()
                 # WandB – Log images in your test dataset automatically, along with predicted and true labels by passing pytorch tensors with image data into wandb.Image
-                example_images.append(wandb.Image(
-                    et_densitymap, caption="Pred: {} Truth: {}".format(et_densitymap.cpu().sum(),gt_densitymap.cpu().sum())))                
-                overlap_images.append(wandb.Image(_visualize_(denormalize(image[0].cpu()).squeeze(0).squeeze(0).permute(1,2,0),et_densitymap.squeeze(0).squeeze(0).cpu().numpy()),
-                    caption="Pred: {} Truth: {}".format(et_densitymap.cpu().sum(),gt_densitymap.cpu().sum())))
+                if i <10:
+                    example_images.append(wandb.Image(
+                        et_densitymap, caption="Pred: {} Truth: {}".format(et_densitymap.cpu().sum(),gt_densitymap.cpu().sum())))                
+                    overlap_images.append(wandb.Image(_visualize_(denormalize(image[0].cpu()).squeeze(0).squeeze(0).permute(1,2,0),et_densitymap.squeeze(0).squeeze(0).cpu().numpy()),
+                        caption="Pred: {} Truth: {}".format(et_densitymap.cpu().sum(),gt_densitymap.cpu().sum())))
             epoch_mae /= len(test_dataloader)
             if epoch_mae < min_mae:
                 min_mae, min_mae_epoch = epoch_mae, epoch
                 torch.save(model.state_dict(), os.path.join(cfg.checkpoints,str(epoch)+"best_model.pth"))     # save checkpoints
-            elif epoch%10 ==0:
-                torch.save(model.state_dict(), os.path.join(cfg.checkpoints,str(epoch)+".pth"))     # save checkpoints
+            #elif epoch%10 ==0:
+            #    torch.save(model.state_dict(), os.path.join(cfg.checkpoints,str(epoch)+".pth"))     # save checkpoints
             print('Epoch ', epoch, ' MAE: ', epoch_mae, ' Min MAE: ', min_mae, ' Min Epoch: ', min_mae_epoch)   # print information
   #          cfg.writer.add_scalar('Val_MAE', epoch_mae, epoch)
    #         cfg.writer.add_image(str(epoch)+'/Image', denormalize(image[0].cpu()))
