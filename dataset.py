@@ -45,7 +45,7 @@ class CrowdDataset(torch.utils.data.Dataset):
             img = self.img_transform(img)
         if self.dmap_transform is not None:
             dmap = self.dmap_transform(dmap)
-        return {'image': img, 'densitymap': dmap}
+        return {'image': img, 'densitymap': dmap, 'image_name':fname}
 
     def read_image_and_dmap(self, fname):
         img = Image.open(os.path.join(self.img_path, fname))

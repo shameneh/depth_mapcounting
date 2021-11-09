@@ -1,7 +1,12 @@
 *.PNG
 *.png
 *.pth
+<<<<<<< HEAD
 runs/
 checkpoint*/
 test_results*/
 wandb/
+=======
+wandb/
+runs/
+>>>>>>> 45d92b0598f52204eaa762376ac29969d2597f0d
