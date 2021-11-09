@@ -1,6 +1,5 @@
 '''
 This script is for generating the ground truth density map 
-for ShanghaiTech PartB. 
 '''
 import numpy as np
 from PIL import Image
@@ -59,7 +58,6 @@ if __name__ == '__main__':
             image =Image.open(image_path)
             image = np.array(image)
             points = np.load(points_path)
-           # points = mat['image_info'][0][0][0][0][0]
             # generate densitymap
             densitymap = generate_fixed_kernel_densitymap(image,points,sigma=15)
 #            print(densitymap.sum())
