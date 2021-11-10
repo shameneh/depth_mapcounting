@@ -46,7 +46,7 @@ def generate_fixed_kernel_densitymap(image,points,sigma=15):
 if __name__ == '__main__':
     phase_list =['train','validation']
     root_dir = '../../datasets/all_data'
-
+    new_size = (1280,640)
     for phase in phase_list:
 
         if not os.path.exists(os.path.join(root_dir, phase ,'densitymaps')):
@@ -58,8 +58,27 @@ if __name__ == '__main__':
             image =Image.open(image_path)
             image = np.array(image)
             points = np.load(points_path)
+           
             # generate densitymap
             densitymap = generate_fixed_kernel_densitymap(image,points,sigma=15)
+            image =Image.open(image_path)
+
+            points = np.load(points_path)
+
+            #resizingtrue_count = np.count_nonzero(np.array(lbl))
+            new_points = []
+            #resize image
+            img_resized = image.resize(new_size)
+            #resize points
+            for point in points:
+                x_s = new_size[0] / image.size[0]
+                y_s = new_size[1] / image.size[1]
+                new_x = int(np.round(point[0] * x_s))
+                new_y = int(np.round(point[1] * y_s))
+            
+            img_resized = np.array(img_resized)
+            #generate density map
+            densitymap = generate_fixed_kernel_densitymap(img_resized,new_points,sigma=15)
 #            print(densitymap.sum())
             np.save(image_path.replace('images','densitymaps').replace('.PNG','.npy'),densitymap)
         print(phase+' density maps have generated.')
