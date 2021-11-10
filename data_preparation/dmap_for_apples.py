@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import os
 import math
 from tqdm import tqdm
+from config import Config
 def generate_fixed_kernel_densitymap(image,points,sigma=15):
     '''
     Use fixed size kernel to construct the ground truth density map 
@@ -44,13 +45,16 @@ def generate_fixed_kernel_densitymap(image,points,sigma=15):
     return densitymap    
     
 if __name__ == '__main__':
+    cfg = Config()
     phase_list =['train','validation']
-    root_dir = '../../datasets/all_data'
-    new_size = (1280,640)
+    root_dir = '../../dataset/all_data'
+
+    new_size =cfg.image_size # None
     for phase in phase_list:
 
         if not os.path.exists(os.path.join(root_dir, phase ,'densitymaps')):
             os.mkdir(os.path.join(root_dir ,phase,'densitymaps'))
+        
         image_file_list = os.listdir(os.path.join(root_dir,phase,'images'))
         for image_file in tqdm(image_file_list):
             image_path = os.path.join(root_dir, phase, 'images', image_file)
@@ -64,21 +68,22 @@ if __name__ == '__main__':
             image =Image.open(image_path)
 
             points = np.load(points_path)
-
-            #resizingtrue_count = np.count_nonzero(np.array(lbl))
-            new_points = []
-            #resize image
-            img_resized = image.resize(new_size)
-            #resize points
-            for point in points:
-                x_s = new_size[0] / image.size[0]
-                y_s = new_size[1] / image.size[1]
-                new_x = int(np.round(point[0] * x_s))
-                new_y = int(np.round(point[1] * y_s))
+            if new_size in not None:
+                #resizingtrue_count = np.count_nonzero(np.array(lbl))
+                new_points = []
+                #resize points
+                for point in points:
+                    x_s = new_size[0] / image.size[0]
+                    y_s = new_size[1] / image.size[1]
+                    new_x = int(np.round(point[0] * x_s))
+                    new_y = int(np.round(point[1] * y_s))
+                #resize image
+                image = image.resize(new_size)
             
-            img_resized = np.array(img_resized)
+                
+            image = np.array(image)
             #generate density map
-            densitymap = generate_fixed_kernel_densitymap(img_resized,new_points,sigma=15)
+            densitymap = generate_fixed_kernel_densitymap(image,new_points,sigma=15)
 #            print(densitymap.sum())
             np.save(image_path.replace('images','densitymaps').replace('.PNG','.npy'),densitymap)
         print(phase+' density maps have generated.')

@@ -58,8 +58,9 @@ if __name__=="__main__":
     criterion_count = torch.nn.SmoothL1Loss()
     criterion =nn.MSELoss(size_average=False,reduction='sum')                              # objective
     optimizer = torch.optim.Adam(model.parameters(),lr=cfg.lr)              # optimizer
-    train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True, batch_size=cfg.batch_size)
-    test_dataloader  = create_test_dataloader(cfg.dataset_root)             # dataloader
+    #for original size  image_size = None
+    train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True,image_size = cfg.image_size, batch_size=cfg.batch_size)
+    test_dataloader  = create_test_dataloader(cfg.dataset_root,image_size = cfg.image_size)             # dataloader
 
     min_mae = sys.maxsize
     min_mae_epoch = -1
@@ -74,17 +75,6 @@ if __name__=="__main__":
             #Since we want to use counting in loss we need per batch
             true_values_batch, predicted_values_batch = [],[]
             # loop over batch samples
-        #    for true, predicted in zip(gt_densitymap, gt_densitymap):
-                # integrate a density map to get no. of objects
-                # note: density maps were normalized to 100 * no. of objects
-                #       to make network learn better
-         #       true_counts = torch.sum(true).item() / 100
-          #      predicted_counts = torch.sum(predicted).item() / 100
-
-                # update current epoch results
-           #     true_values_batch.append(true_counts)
-            #    predicted_values_batch.append(predicted_counts)
-           # loss_count = criterion_count(torch.tensor(predicted_values_batch,device =cfg.device, requires_grad=True),torch.tensor(true_values_batch,device =cfg.device,requires_grad=True)) 
             loss = loss_dmap#+loss_count
             optimizer.zero_grad()
             loss.backward()                                     # back propagation

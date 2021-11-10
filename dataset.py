@@ -16,7 +16,7 @@ class CrowdDataset(torch.utils.data.Dataset):
     CrowdDataset
     '''
 
-    def __init__(self, root, phase, main_transform=None, img_transform=None, dmap_transform=None):
+    def __init__(self, root, phase,image_size=None, main_transform=None, img_transform=None, dmap_transform=None):
         '''
         root: the root path of dataset.
         phase: train or test.
@@ -24,6 +24,7 @@ class CrowdDataset(torch.utils.data.Dataset):
         img_transform: transforms on image.
         dmap_transform: transforms on densitymap.
         '''
+        self.image_size = image_size
         self.img_path = os.path.join(root, phase+'/images')
         self.dmap_path = os.path.join(root, phase+'/densitymaps')
         self.data_files = [filename for filename in os.listdir(self.img_path)
@@ -52,14 +53,15 @@ class CrowdDataset(torch.utils.data.Dataset):
         if img.mode == 'L':
             print('There is a grayscale image.')
             img = img.convert('RGB')
-
+        if self.image_size in not None:
+            img = img.resize(self.image_size)
         dmap = np.load(os.path.join(
             self.dmap_path, os.path.splitext(fname)[0] + '.npy'))
         dmap = dmap.astype(np.float32, copy=False)
         dmap = Image.fromarray(dmap)
         return img, dmap
 
-def create_train_dataloader(root, use_flip, batch_size):
+def create_train_dataloader(root, use_flip,image_size, batch_size):
     '''
     Create train dataloader.
     root: the dataset root.
@@ -73,12 +75,12 @@ def create_train_dataloader(root, use_flip, batch_size):
     main_trans = Compose(main_trans_list)
     img_trans = Compose([ToTensor()])#, Normalize(mean=[0.5,0.5,0.5],std=[0.225,0.225,0.225])])
     dmap_trans = ToTensor()
-    dataset = CrowdDataset(root=root, phase='train', main_transform=main_trans, 
+    dataset = CrowdDataset(root=root, phase='train',image_size, main_transform=main_trans, 
                     img_transform=img_trans,dmap_transform=dmap_trans)
     dataloader = torch.utils.data.DataLoader(dataset,batch_size=batch_size,shuffle=True,num_workers = 8)
     return dataloader
 
-def create_test_dataloader(root):
+def create_test_dataloader(root,image_size):
     '''
     Create train dataloader.
     root: the dataset root.
@@ -88,7 +90,7 @@ def create_test_dataloader(root):
     main_trans = Compose(main_trans_list)
     img_trans = Compose([ToTensor()])#, Normalize(mean=[0.5,0.5,0.5],std=[0.225,0.225,0.225])])
     dmap_trans = ToTensor()
-    dataset = CrowdDataset(root=root, phase='validation', main_transform=main_trans, 
+    dataset = CrowdDataset(root=root, phase='validation',image_size, main_transform=main_trans, 
                     img_transform=img_trans,dmap_transform=dmap_trans)
     dataloader = torch.utils.data.DataLoader(dataset,batch_size=1,shuffle=False, num_workers =8)
     return dataloader

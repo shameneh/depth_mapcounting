@@ -15,6 +15,7 @@ class Config():
         self.epochs       = 2000                # epochs
         self.checkpoints  = './checkpoints_all'     # checkpoints dir
         self.writer       = SummaryWriter()     # tensorboard writer
+        self.image_size   = (1280,640) 
 
         self.__mkdir(self.checkpoints)
 

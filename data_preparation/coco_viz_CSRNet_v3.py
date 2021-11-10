@@ -103,7 +103,7 @@ def save_img_gt(source, annotation_path, out):
                                                         new_c[-1] - new_c[1]]
 
 
-
+    print(len(new_json_data['images']))
     for number, images in enumerate(new_json_data['images']):
         new_json_data['images'][number]['width'] = Iheight
         new_json_data['images'][number]['height'] = Iwidth
@@ -151,6 +151,7 @@ def main():
     coco = None
     val_coco = None
     for source_ in data2_sources:
+        print(source_)
         #source_ = Path(ROOT_DIR, data)
         annotation_path = Path(source_, 'annotations','instances_default.json')
         annotations = json.load(open(annotation_path, 'r'))
@@ -166,23 +167,23 @@ def main():
         new_json_data_t = save_img_gt(source_, os.path.join(source_, 'annotations', "train_split.json"), TRAIN_SAVE_DIR)
        # file_new = open(os.path.join(source_,'annotations', "train_split.json"), 'w+')
         #json.dump(new_json_data_t, file_new)
-        train_coco = new_json_data_t
+      #  train_coco = new_json_data_t
         new_json_data_v = save_img_gt(source_, os.path.join(source_, 'annotations', "val_split.json"), VAL_SAVE_DIR)
         #file_new = open(os.path.join(source_,'annotations', "val_split.json"), 'w+')
        # json.dump(new_json_data_v, file_new)
-        val_coco_v = new_json_data_v
-        if coco is None:
-            coco = train_coco
-            val_coco = val_coco_v
-        else:
-            coco.merge(train_coco)
-            val_coco.merge(val_coco_v)
+      #  val_coco_v = new_json_data_v
+       # if coco is None:
+        #    coco = train_coco
+        #    val_coco = val_coco_v
+        #else:
+         #   coco.merge(train_coco)
+          #  val_coco.merge(val_coco_v)
         os.remove(os.path.join(source_, 'annotations', "train_split.json"))
         os.remove(os.path.join(source_, 'annotations', "val_split.json"))
     #print(coco.stats, val_coco.stats)
     # export train val split files
-    os.makedirs(Path(TRAIN_SAVE_DIR, 'annotations'), exist_ok=True)
-    os.makedirs(Path(VAL_SAVE_DIR, 'annotations'), exist_ok=True)
+    #os.makedirs(Path(TRAIN_SAVE_DIR, 'annotations'), exist_ok=True)
+    #os.makedirs(Path(VAL_SAVE_DIR, 'annotations'), exist_ok=True)
    # json.dump(coco, os.path.join(TRAIN_SAVE_DIR, 'annotations', "train.json"))
    # json.dump(val_coco, os.path.join(VAL_SAVE_DIR, 'annotations', "val.json"))
     #save_json(coco, os.path.join(TRAIN_SAVE_DIR, 'annotations', "train.json"))
