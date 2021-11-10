@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 import os
 import math
 from tqdm import tqdm
+import sys
+
+sys.path.insert(1, '..')
 from config import Config
 def generate_fixed_kernel_densitymap(image,points,sigma=15):
     '''
