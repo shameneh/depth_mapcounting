@@ -68,7 +68,7 @@ if __name__ == '__main__':
             image =Image.open(image_path)
 
             points = np.load(points_path)
-            if new_size in not None:
+            if new_size is not None:
                 #resizingtrue_count = np.count_nonzero(np.array(lbl))
                 new_points = []
                 #resize points
