@@ -11,7 +11,7 @@ class Config():
         self.dataset_root = '/home/ubuntu/ameneh/dataset/all_data'
         self.device       = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.lr           = 1e-4                # learning rate
-        self.batch_size   = 2                   # batch size
+        self.batch_size   = 4                   # batch size
         self.epochs       = 2000                # epochs
         self.checkpoints  = './checkpoints_small'     # checkpoints dir
         self.writer       = SummaryWriter()     # tensorboard writer

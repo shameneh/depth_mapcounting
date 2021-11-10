@@ -62,14 +62,13 @@ if __name__ == '__main__':
         for image_file in tqdm(image_file_list):
             image_path = os.path.join(root_dir, phase, 'images', image_file)
             points_path = image_path.replace('images','ground_truth_points').replace('.PNG','.npy')
-            image =Image.open(image_path)
-            image = np.array(image)
-            points = np.load(points_path)
+            #image =Image.open(image_path)
+            #image = np.array(image)
+            #points = np.load(points_path)
            
             # generate densitymap
-            densitymap = generate_fixed_kernel_densitymap(image,points,sigma=15)
-            image =Image.open(image_path)
-
+            #densitymap = generate_fixed_kernel_densitymap(image,points,sigma=15)
+            image =Image.open(image_path)         
             points = np.load(points_path)
             if new_size is not None:
                 #resizingtrue_count = np.count_nonzero(np.array(lbl))
@@ -80,13 +79,13 @@ if __name__ == '__main__':
                     y_s = new_size[1] / image.size[1]
                     new_x = int(np.round(point[0] * x_s))
                     new_y = int(np.round(point[1] * y_s))
-                #resize image
+                    new_points.append((new_x,new_y))
+               #resize image
                 image = image.resize(new_size)
-            
+               
                 
-            image = np.array(image)
+            image= np.array(image)
             #generate density map
             densitymap = generate_fixed_kernel_densitymap(image,new_points,sigma=15)
-#            print(densitymap.sum())
             np.save(image_path.replace('images','densitymaps').replace('.PNG','.npy'),densitymap)
         print(phase+' density maps have generated.')

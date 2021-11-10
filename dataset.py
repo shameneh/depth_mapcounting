@@ -75,7 +75,7 @@ def create_train_dataloader(root, use_flip,image_size, batch_size):
     main_trans = Compose(main_trans_list)
     img_trans = Compose([ToTensor()])#, Normalize(mean=[0.5,0.5,0.5],std=[0.225,0.225,0.225])])
     dmap_trans = ToTensor()
-    dataset = CrowdDataset(root=root, phase='train',image_size, main_transform=main_trans, 
+    dataset = CrowdDataset(root=root, phase='train',image_size =image_size, main_transform=main_trans, 
                     img_transform=img_trans,dmap_transform=dmap_trans)
     dataloader = torch.utils.data.DataLoader(dataset,batch_size=batch_size,shuffle=True,num_workers = 8)
     return dataloader
@@ -90,7 +90,7 @@ def create_test_dataloader(root,image_size):
     main_trans = Compose(main_trans_list)
     img_trans = Compose([ToTensor()])#, Normalize(mean=[0.5,0.5,0.5],std=[0.225,0.225,0.225])])
     dmap_trans = ToTensor()
-    dataset = CrowdDataset(root=root, phase='validation',image_size, main_transform=main_trans, 
+    dataset = CrowdDataset(root=root, phase='validation',image_size=image_size, main_transform=main_trans, 
                     img_transform=img_trans,dmap_transform=dmap_trans)
     dataloader = torch.utils.data.DataLoader(dataset,batch_size=1,shuffle=False, num_workers =8)
     return dataloader
