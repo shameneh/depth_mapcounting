@@ -13,7 +13,7 @@ class Config():
         self.lr           = 1e-4                # learning rate
         self.batch_size   = 2                   # batch size
         self.epochs       = 2000                # epochs
-        self.checkpoints  = './checkpoints_all'     # checkpoints dir
+        self.checkpoints  = './checkpoints_small'     # checkpoints dir
         self.writer       = SummaryWriter()     # tensorboard writer
         self.image_size   = (1280,640) 
 

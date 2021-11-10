@@ -53,7 +53,7 @@ class CrowdDataset(torch.utils.data.Dataset):
         if img.mode == 'L':
             print('There is a grayscale image.')
             img = img.convert('RGB')
-        if self.image_size in not None:
+        if self.image_size is not None:
             img = img.resize(self.image_size)
         dmap = np.load(os.path.join(
             self.dmap_path, os.path.splitext(fname)[0] + '.npy'))
