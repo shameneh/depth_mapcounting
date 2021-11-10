@@ -82,7 +82,8 @@ if __name__ == '__main__':
                     new_points.append((new_x,new_y))
                #resize image
                 image = image.resize(new_size)
-               
+            else:
+                new_points = points
                 
             image= np.array(image)
             #generate density map
