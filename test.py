@@ -198,8 +198,8 @@ if __name__=="__main__":
     torch.backends.cudnn.enabled=False
     img_root='../dataset/all_data'
     gt_dmap_root='test'
-    model_param_path='./checkpoints_all/16best_model.pth'
-    output = 'test_results_16'   
+    model_param_path='./checkpoints_small/27best_model.pth'
+    output = 'test_results_27'   
     output =os.path.join( output , 'images')
     os.makedirs(output, exist_ok = True)
     os.chmod(output, mode =  0o777)
