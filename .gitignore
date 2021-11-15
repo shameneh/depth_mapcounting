@@ -7,3 +7,4 @@ checkpoint*/
 test_results*/
 wandb/
 runs/
+*.pyc

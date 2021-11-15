@@ -63,7 +63,7 @@ class CrowdDataset(torch.utils.data.Dataset):
         dmap = dmap.astype(np.float32, copy=False)
         dmap = Image.fromarray(dmap)
         return img, dmap
-    def _prepare_weights(self,  max_target=201, lds=False, lds_kernel='gaussian', lds_ks=5, lds_sigma=2):
+    def _prepare_weights(self,  max_target=100, lds=False, lds_kernel='gaussian', lds_ks=5, lds_sigma=2):
         print('weights preparing ...')
         if lds:
             value_dict = {x: 0 for x in range(max_target)}

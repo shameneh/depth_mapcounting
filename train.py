@@ -49,7 +49,7 @@ if __name__=="__main__":
     cfg = Config()
     if cfg.lds:
         from dataset_lds import create_train_dataloader,create_test_dataloader
-
+    '''
     wandb.init(entity="vivid", project="object_counting_dmap", config={"learning_rate": cfg.lr,
                                                                        "architecture": 'CSRNet',
                                                                        "dataset":'train_in_spect',
@@ -58,16 +58,16 @@ if __name__=="__main__":
                                                                        "batch_size": cfg.batch_size,
                                                                        "flip":True, })  
    
+   '''
     model = CSRNet().to(cfg.device)                                         # model
-    wandb.watch(model,log ='all')
-    #criterion = torch.nn.CosineSimilarity(dim=1)
+#    wandb.watch(model,log ='all')
     criterion_count = torch.nn.SmoothL1Loss()
     criterion =nn.MSELoss(size_average=False,reduction='sum')                              # objective
     optimizer = torch.optim.Adam(model.parameters(),lr=cfg.lr)              # optimizer
     #for original size  image_size = None 
     if cfg.lds:
         #dataset_lds.py
-        criterion =weighted_mse_loss()  
+        #criterion =weighted_mse_loss()  
         train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True,image_size = cfg.image_size, batch_size=cfg.batch_size, lds=True, lds_kernel='gaussian', lds_ks=5, lds_sigma=2)
     else:
         train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True,image_size = cfg.image_size, batch_size=cfg.batch_size)
@@ -85,15 +85,18 @@ if __name__=="__main__":
             if cfg.lds:
                 weight = data['weight'].to(cfg.device)
                 print('gt: ', [gt.data.sum() for gt in gt_densitymap])
-                print(weight)
-                loss_dmap = criterion(et_densitymap,gt_densitymap,weight)       # calculate weighted loss
+                print(weight.shape)
+                loss_dmap = weighted_mse_loss(et_densitymap,gt_densitymap,weight)       # calculate loss
+                
             else:
                 loss_dmap = criterion(et_densitymap,gt_densitymap)       # calculate loss
             true_values_batch, predicted_values_batch = [],[]
             loss = loss_dmap#+loss_count
+            print('Losss: ' ,loss.item)
             optimizer.zero_grad()
             loss.backward()                                     # back propagation
             epoch_loss += loss.item()      
+            print(epoch_loss)
             optimizer.step()                                    # update network parameters
         wandb.log({"train/loss": epoch_loss/len(train_dataloader)})
 #        cfg.writer.add_scalar('Train_Loss', epoch_loss/len(train_dataloader), epoch)

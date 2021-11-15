@@ -8,16 +8,15 @@ def denormalize(tensor):
     for t, m, s in zip(tensor, mean, std):
         t.mul_(s).add_(m)
     return tensor
+def  weighted_mse_loss(inputs, targets, weights):        
+    #return torch.sum(weights * (inputs - targets) ** 2)
+    loss = (inputs-targets)**2
+    print(weights.unsqueeze(2).unsqueeze(2).expand_as(loss).shape)
+    if weights is not None:
+        loss *=weights.unsqueeze(2).unsqueeze(2).expand_as(loss)
 
-class weighted_mse_loss():
-    def __init__(self):
-        super(MSELoss, self).__init__()
-
-    def forward(self, inputs, targets,weights=None):
-        loss = (inputs-targets)**2
-        if weights is not None:
-            loss *=weights.expand_as(loss)
-        loss=torch.mean(loss)
-        return loss
+    loss=torch.mean(loss)
+    print(loss)
+    return loss
      
 

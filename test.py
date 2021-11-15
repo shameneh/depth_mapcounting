@@ -17,6 +17,7 @@ from utils import denormalize
 import csv
 import os
 from config import Config
+import time
 def visual_counting(img,gt, dmap, output,itr):
 
     img = Image.fromarray((img * 255).astype(np.uint8))
@@ -201,7 +202,7 @@ if __name__=="__main__":
     img_root='../dataset/all_data'
     gt_dmap_root='test'
     model_param_path='./checkpoints_small/44best_model.pth'
-    output = 'test_results_44_1'   
+    output = 'test_results_44'   
     output =os.path.join( output , 'images')
     os.makedirs(output, exist_ok = True)
     os.chmod(output, mode =  0o777)
