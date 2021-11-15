@@ -9,14 +9,14 @@ class Config():
     '''
     def __init__(self):
         self.dataset_root = '/home/ubuntu/ameneh/dataset/all_data'
-        self.device       = torch.device('cpu')#torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-        self.lr           = 1e-4                # learning rate
-        self.batch_size   = 8                   # batch size
+        self.device       = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+        self.lr           = 1e-6                # learning rate
+        self.batch_size   = 2                   # batch size
         self.epochs       = 2000                # epochs
-        self.checkpoints  = './checkpoints_small'     # checkpoints dir
+        self.checkpoints  = './checkpoints_SFCN'     # checkpoints dir
         self.writer       = SummaryWriter()     # tensorboard writer
         self.image_size   = (1280,640) 
-
+        self.lds          = False
         self.__mkdir(self.checkpoints)
 
     def __mkdir(self, path):

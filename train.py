@@ -8,7 +8,8 @@ import sys
 from tqdm import tqdm
 
 from config import Config
-from model import CSRNet
+#from model import CSRNet
+from model_Res101_SFCN import CSRNet
 from dataset import create_train_dataloader,create_test_dataloader
 from utils import denormalize
 import wandb
@@ -45,7 +46,7 @@ def _visualize_(img,dmap):
 
 if __name__=="__main__":
     cfg = Config()
-    '''
+    
     wandb.init(entity="vivid", project="object_counting_dmap", config={"learning_rate": cfg.lr,
                                                                        "architecture": 'CSRNet',
                                                                        "dataset":'train_in_spect',
@@ -53,15 +54,19 @@ if __name__=="__main__":
                                                                        "epoch": cfg.epochs,
                                                                        "batch_size": cfg.batch_size,
                                                                        "flip":True, })  
-    '''
+   
     model = CSRNet().to(cfg.device)                                         # model
-   # wandb.watch(model,log ='all')
+    wandb.watch(model,log ='all')
     #criterion = torch.nn.CosineSimilarity(dim=1)
     criterion_count = torch.nn.SmoothL1Loss()
     criterion =nn.MSELoss(size_average=False,reduction='sum')                              # objective
     optimizer = torch.optim.Adam(model.parameters(),lr=cfg.lr)              # optimizer
-    #for original size  image_size = None
-    train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True,image_size = cfg.image_size, batch_size=cfg.batch_size, lds=True, lds_kernel='gaussian', lds_ks=5, lds_sigma=2)
+    #for original size  image_size = None 
+    if cfg.lds:
+        #dataset_lds.py
+        train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True,image_size = cfg.image_size, batch_size=cfg.batch_size, lds=True, lds_kernel='gaussian', lds_ks=5, lds_sigma=2)
+    else:
+        train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True,image_size = cfg.image_size, batch_size=cfg.batch_size)
     test_dataloader  = create_test_dataloader(cfg.dataset_root,image_size = cfg.image_size)             # dataloader
 
     min_mae = sys.maxsize
