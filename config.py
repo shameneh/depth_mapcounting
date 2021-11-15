@@ -16,7 +16,7 @@ class Config():
         self.checkpoints  = './checkpoints_SFCN'     # checkpoints dir
         self.writer       = SummaryWriter()     # tensorboard writer
         self.image_size   = (1280,640) 
-        self.lds          = False 
+        self.lds          = True 
         self.__mkdir(self.checkpoints)
 
     def __mkdir(self, path):
