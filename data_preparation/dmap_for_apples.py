@@ -49,7 +49,7 @@ def generate_fixed_kernel_densitymap(image,points,sigma=15):
     
 if __name__ == '__main__':
     cfg = Config()
-    phase_list =['train','validation']
+    phase_list =['test']#['train','validation']
     root_dir = '../../dataset/all_data'
 
     new_size =cfg.image_size # None

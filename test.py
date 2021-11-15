@@ -16,6 +16,7 @@ import numpy as np
 from utils import denormalize
 import csv
 import os
+from config import Config
 def visual_counting(img,gt, dmap, output,itr):
 
     img = Image.fromarray((img * 255).astype(np.uint8))
@@ -123,7 +124,7 @@ def cal_mae(img_root,gt_dmap_root,model_param_path,out_path):
     model=CSRNet()
     model.load_state_dict(torch.load(model_param_path))
     model.to(device)
-    dataset=CrowdDataset(img_root,gt_dmap_root,img_transform=ToTensor(), dmap_transform=ToTensor())
+    dataset=CrowdDataset(img_root,gt_dmap_root,image_size = cfg.image_size,img_transform=ToTensor(), dmap_transform=ToTensor())
     dataloader=torch.utils.data.DataLoader(dataset,batch_size=1,shuffle=False)
     model.eval()
     mae=0
@@ -139,10 +140,10 @@ def cal_mae(img_root,gt_dmap_root,model_param_path,out_path):
         for i,data in enumerate(tqdm(dataloader)):
             img = data['image'].to(device)
             gt_dmap = data['densitymap'].to(device)
-
+            f_name = data['image_name']
             et_dmap=model(img)
             T_p,F_p,F_n= visual_counting(img.squeeze(0).squeeze(0).permute(1,2,0).cpu().numpy(), gt_dmap.squeeze(0).squeeze(0).cpu().numpy(), et_dmap.squeeze(0).squeeze(0).cpu().numpy(), out_path, i)
-            data_csv = [str(i), '15',str(np.ceil(gt_dmap.data.sum().item())),
+            data_csv = [str(f_name), '15',str(np.ceil(gt_dmap.data.sum().item())),
                         str(np.ceil(et_dmap.data.sum().item())),
                         str(rmse(gt_dmap.data.sum().item(),
                                  et_dmap.data.sum().item())),
@@ -169,14 +170,14 @@ def estimate_density_map(img_root,gt_dmap_root,model_param_path,index,output):
     device=torch.device("cuda")
     model=CSRNet().to(device)
     model.load_state_dict(torch.load(model_param_path))
-    dataset=CrowdDataset(img_root,gt_dmap_root,img_transform=ToTensor(), dmap_transform=ToTensor())
+    dataset=CrowdDataset(img_root,gt_dmap_root,image_size = cfg.image_size,img_transform=ToTensor(), dmap_transform=ToTensor())
     dataloader=torch.utils.data.DataLoader(dataset,batch_size=1,shuffle=False)
     model.eval()
     for i,data in enumerate(dataloader):
         if i<index:
             img = data['image'].to(device)
             gt_dmap = data['densitymap'].to(device)
-
+            
             with torch.no_grad():
                 et_dmap=model(img).detach()
             et_dmap=et_dmap.squeeze(0).squeeze(0).cpu().numpy()
@@ -195,11 +196,12 @@ def estimate_density_map(img_root,gt_dmap_root,model_param_path,index,output):
 
 
 if __name__=="__main__":
+    cfg = Config()
     torch.backends.cudnn.enabled=False
     img_root='../dataset/all_data'
     gt_dmap_root='test'
-    model_param_path='./checkpoints_small/27best_model.pth'
-    output = 'test_results_27'   
+    model_param_path='./checkpoints_small/44best_model.pth'
+    output = 'test_results_44_1'   
     output =os.path.join( output , 'images')
     os.makedirs(output, exist_ok = True)
     os.chmod(output, mode =  0o777)

@@ -9,9 +9,10 @@ from tqdm import tqdm
 
 from config import Config
 #from model import CSRNet
-from model_Res101_SFCN import CSRNet
+from model import CSRNet
+
 from dataset import create_train_dataloader,create_test_dataloader
-from utils import denormalize
+from utils import denormalize,weighted_mse_loss
 import wandb
 import matplotlib.pyplot as plt
 from matplotlib.figure import figaspect
@@ -46,7 +47,9 @@ def _visualize_(img,dmap):
 
 if __name__=="__main__":
     cfg = Config()
-    
+    if cfg.lds:
+        from dataset_lds import create_train_dataloader,create_test_dataloader
+
     wandb.init(entity="vivid", project="object_counting_dmap", config={"learning_rate": cfg.lr,
                                                                        "architecture": 'CSRNet',
                                                                        "dataset":'train_in_spect',
@@ -64,6 +67,7 @@ if __name__=="__main__":
     #for original size  image_size = None 
     if cfg.lds:
         #dataset_lds.py
+        criterion =weighted_mse_loss()  
         train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True,image_size = cfg.image_size, batch_size=cfg.batch_size, lds=True, lds_kernel='gaussian', lds_ks=5, lds_sigma=2)
     else:
         train_dataloader = create_train_dataloader(cfg.dataset_root, use_flip=True,image_size = cfg.image_size, batch_size=cfg.batch_size)
@@ -77,21 +81,20 @@ if __name__=="__main__":
         for i, data in enumerate(tqdm(train_dataloader)):
             image = data['image'].to(cfg.device)
             gt_densitymap = data['densitymap'].to(cfg.device)
-#            weight = data['weight'].to(cfg.device)
-#            print('gt: ', [gt.data.sum() for gt in gt_densitymap])
-#            print(weight)
-#            continue 
             et_densitymap = model(image)                        # forward propagation
-            loss_dmap = criterion(et_densitymap,gt_densitymap)       # calculate loss
-            #Since we want to use counting in loss we need per batch
+            if cfg.lds:
+                weight = data['weight'].to(cfg.device)
+                print('gt: ', [gt.data.sum() for gt in gt_densitymap])
+                print(weight)
+                loss_dmap = criterion(et_densitymap,gt_densitymap,weight)       # calculate weighted loss
+            else:
+                loss_dmap = criterion(et_densitymap,gt_densitymap)       # calculate loss
             true_values_batch, predicted_values_batch = [],[]
-            # loop over batch samples
             loss = loss_dmap#+loss_count
             optimizer.zero_grad()
             loss.backward()                                     # back propagation
             epoch_loss += loss.item()      
             optimizer.step()                                    # update network parameters
-#        exit(0)
         wandb.log({"train/loss": epoch_loss/len(train_dataloader)})
 #        cfg.writer.add_scalar('Train_Loss', epoch_loss/len(train_dataloader), epoch)
 
