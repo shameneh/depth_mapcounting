@@ -11,12 +11,10 @@ def denormalize(tensor):
 def  weighted_mse_loss(inputs, targets, weights):        
     #return torch.sum(weights * (inputs - targets) ** 2)
     loss = (inputs-targets)**2
-    print(weights.unsqueeze(2).unsqueeze(2).expand_as(loss).shape)
     if weights is not None:
         loss *=weights.unsqueeze(2).unsqueeze(2).expand_as(loss)
 
     loss=torch.mean(loss)
-    print(loss)
     return loss
      
 

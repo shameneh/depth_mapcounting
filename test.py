@@ -197,12 +197,12 @@ def estimate_density_map(img_root,gt_dmap_root,model_param_path,index,output):
 
 
 if __name__=="__main__":
-    cfg = Config()
+    cfg = Config(phase='test')
     torch.backends.cudnn.enabled=False
     img_root='../dataset/all_data'
     gt_dmap_root='test'
-    model_param_path='./checkpoints_small/44best_model.pth'
-    output = 'test_results_44'   
+    model_param_path='./checkpoints_weighted_loss/63best_model.pth'
+    output = 'test_results_63_weighted_loss'   
     output =os.path.join( output , 'images')
     os.makedirs(output, exist_ok = True)
     os.chmod(output, mode =  0o777)
